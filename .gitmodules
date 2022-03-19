@@ -1,0 +1,3 @@
+[submodule "intel-qs"]
+	path = intel-qs
+	url = git@github.com:iqusoft/intel-qs.git

@@ -1,0 +1,14 @@
+{
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=${workspaceFolder}/google.pylintrc"
+    ],
+    "python.linting.enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfArgs": [
+        "--style={based_on_style: google, indent_width: 2}"
+    ],
+}
