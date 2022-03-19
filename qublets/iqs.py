@@ -1,9 +1,25 @@
 """ Internal IQS wrapper """
 
+from os import path
 import sys
 
-# autopep8: off
 # pylint: disable-next=wrong-import-position
-sys.path.insert(0, './intel-qs/build/lib')
+repo_root = path.dirname(path.dirname(path.abspath(__file__)))
+lib_path = path.join(repo_root, "intel-qs", "build", "lib")
+sys.path.insert(0, lib_path)
 import intelqs_py as _iqs
-# autopep8: on
+
+
+def cpp_method(*args, **kwargs):
+  raise Exception("Method only exists in C++. See qublets/iqs.py to enable")
+
+
+# List of methods in C++ that are not exposed to Python.
+# If you'd like to use any, add the given config line to
+# intel-qs/pybind11/intelqs_py.cpp locally and rebuild.
+# TODO(dyordan1): Push this upstream into intel-qs
+
+# In py::class_< QubitRegister<ComplexDP> >:
+# .def("GetGlobalAmplitude", &QubitRegister<ComplexDP>::GetGlobalAmplitude)
+if _iqs.QubitRegister.GetGlobalAmplitude is None:
+  _iqs.QubitRegister.GetGlobalAmplitude = cpp_method

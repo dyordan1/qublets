@@ -11,6 +11,9 @@ class Qubit:
   """ A single qubit in a Q(U)Int """
 
   def __init__(self, quint: QIntType, qubit: int) -> None:
+    if qubit >= quint.num_qubits:
+      raise Exception("Qubit index out of bounds")
+
     self.quint = quint
     self.qubit = qubit
 

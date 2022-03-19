@@ -1,3 +1,5 @@
+#!/bin/bash
+
 conda install -c conda-forge pybind11
 
 mkdir intel-qs/build

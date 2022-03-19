@@ -1,6 +1,7 @@
 """ QUInt and QInt class definition """
 
 from typing import Optional, Type, TypeVar
+
 from .qpu import QPU
 from .qubit import Qubit
 from .rng import _rng

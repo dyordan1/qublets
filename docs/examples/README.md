@@ -1,12 +1,12 @@
-Qublet Examples
+Qublet Simulation Examples
 ===
 
 To run any of the examples below, simply replace the body of the function called `work` in the stanza below:
 ```python
-from qublets import QInt, QUInt
+from qublets import QPU, QInt, QUInt, Simulation
 
 def work():
-  return QInt.zeros(0).measure()
+  return QInt.zeros(1).measure()
 
 sim = Simulation(1000, work)
 print(sim.run())
@@ -81,4 +81,35 @@ def work():
 
 # Example Output: [(0, 547), (1, 453)]
 # Took 5304.76ms
+```
+
+Qublet State Inspection
+===
+Read QPU states (requires intel-qs mod)
+---
+```python
+from qublets import QUInt
+
+q1 = QUInt.zeros(2)
+print(q1.qpu.states().debug_string())
+
+q1[0].hadamard()
+print(q1.qpu.states().debug_string())
+
+q1[1].c_negate(on=q1[0])
+print(q1.qpu.states().debug_string())
+```
+
+Output:
+```
+QPU states:
+0: 100.0%
+
+QPU states:
+0: 50.0%
+1: 50.0%
+
+QPU states:
+0: 50.0%
+3: 50.0%
 ```
