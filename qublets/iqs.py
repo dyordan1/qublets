@@ -21,5 +21,5 @@ def cpp_method(*args, **kwargs):
 
 # In py::class_< QubitRegister<ComplexDP> >:
 # .def("GetGlobalAmplitude", &QubitRegister<ComplexDP>::GetGlobalAmplitude)
-if _iqs.QubitRegister.GetGlobalAmplitude is None:
+if 'GetGlobalAmplitude' not in dir(_iqs.QubitRegister):
   _iqs.QubitRegister.GetGlobalAmplitude = cpp_method

@@ -1,11 +1,9 @@
 """ Qubit class definition """
 
-from __future__ import annotations
-
 from typing import TypeVar
 
 QIntType = TypeVar("QIntType", bound="QUInt")
-
+QubitType = TypeVar("Qubit", bound="Qubit")
 
 class Qubit:
   """ A single qubit in a Q(U)Int """
@@ -17,7 +15,7 @@ class Qubit:
     self.quint = quint
     self.qubit = qubit
 
-  def negate(self) -> Qubit:
+  def negate(self) -> QubitType:
     """ Negates the qubit (PauliX Gate)
 
     Returns:
@@ -28,7 +26,7 @@ class Qubit:
     self.quint.negate(self.qubit)
     return self
 
-  def c_negate(self, on: Qubit) -> Qubit:
+  def c_negate(self, on: QubitType) -> QubitType:
     """ Controlled negate on another qubit
 
     Returns:
@@ -39,7 +37,7 @@ class Qubit:
     self.quint.c_negate(on.quint, self.qubit, on.qubit)
     return self
 
-  def sqrt_not(self) -> Qubit:
+  def sqrt_not(self) -> QubitType:
     """ Apply square root of `not`. Applying this twice is a `not` gate
 
     Returns:
@@ -50,7 +48,7 @@ class Qubit:
     self.quint.sqrt_not(self.qubit)
     return self
 
-  def hadamard(self) -> Qubit:
+  def hadamard(self) -> QubitType:
     """ Applies a hadamard gate. Puts the qubit in an exact superposition
 
     Returns:
@@ -61,7 +59,7 @@ class Qubit:
     self.quint.hadamard(self.qubit)
     return self
 
-  def dburby(self) -> Qubit:
+  def dburby(self) -> QubitType:
     """ An alias for hadamard
 
     Returns:
@@ -71,7 +69,7 @@ class Qubit:
 
     return self.hadamard()
 
-  def swap(self, other: Qubit) -> Qubit:
+  def swap(self, other: QubitType) -> QubitType:
     """ Swap with a give qubit
 
     Args:
@@ -85,7 +83,7 @@ class Qubit:
     self.quint.swap(other.quint, self.qubit, other.qubit)
     return self
 
-  def c_swap(self, other: Qubit, on: Qubit) -> Qubit:
+  def c_swap(self, other: QubitType, on: QubitType) -> QubitType:
     self.quint.c_swap(other.quint, self.qubit, other.qubit, on=on)
     return self
 

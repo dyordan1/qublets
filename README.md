@@ -10,7 +10,7 @@ Qublets is supposed to eliminate the hassle most other quantum computing librari
 
 You will need [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) installed to proceed. Verify successful installation by checking that `which python` returns an anaconda path prior to attempting any qublets (intel-qs) setup.
 
-If you're on Unix (including OS X), you should be able to get going by running setup.sh and waiting a while. If you're on Windows, you can still do that by using [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) (highly recommended).
+If you're on Unix (including OS X), you should be able to get going by running [`manual-setup.sh`](./manual-setup.sh) and waiting a while. If you're on Windows, you can still do that by using [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) (highly recommended).
 
 If you'd like to DIY, simply follow the [build instructions](https://github.com/iqusoft/intel-qs#build-instructions) for [intel-qs](https://github.com/iqusoft/intel-qs). Qublets is a python3 wrapper around it.
 
