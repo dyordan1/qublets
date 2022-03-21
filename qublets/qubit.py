@@ -1,5 +1,6 @@
 """ Qubit class definition """
 
+from math import pi
 from typing import TypeVar
 
 QIntType = TypeVar("QIntType", bound="QUInt")
@@ -60,15 +61,16 @@ class Qubit:
     self.quint.hadamard(self.qubit)
     return self
 
-  def dburby(self) -> QubitType:
-    """ An alias for hadamard
+  def phase(self, angle: float = pi / 2) -> QubitType:
+    """ Applies a hadamard gate. Puts the qubit in an exact superposition
 
     Returns:
       The Qubit
 
     """
 
-    return self.hadamard()
+    self.quint.phase(self.qubit, angle)
+    return self
 
   def swap(self, other: QubitType) -> QubitType:
     """ Swap with a give qubit
@@ -90,3 +92,8 @@ class Qubit:
 
   def measure(self) -> int:
     return self.quint.measure(self.qubit)
+
+  # Aliases
+  h = hadamard
+  dburby = hadamard
+  entangle = c_negate

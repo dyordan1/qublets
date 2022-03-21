@@ -1,5 +1,6 @@
 """ QUInt and QInt class definition """
 
+from math import pi
 from typing import Literal, Optional, Type, TypeVar
 
 from .qpu import QPU
@@ -150,6 +151,18 @@ class QUInt:
 
     return self
 
+  def phase(self: QIntType,
+            qubit: Optional[int] = None,
+            angle: float = -pi / 2) -> QIntType:
+    if qubit is not None:
+      self.qpu.ApplyRotationZ(self.start_qubit + qubit, angle)
+      return self
+
+    for i in range(self.num_qubits):
+      self.phase(i, angle)
+
+    return self
+
   def swap(self: QIntType,
            other: QIntType,
            qubit: Optional[int] = None,
@@ -242,6 +255,11 @@ class QUInt:
       val |= self.measure(i)
 
     return val
+
+  # Aliases
+  h = hadamard
+  dburby = hadamard
+  entangle = c_negate
 
 
 class QInt(QUInt):
