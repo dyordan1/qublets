@@ -60,7 +60,7 @@ with open("README.md") as f:
   long_description = f.read()
 
 setup(name="qublets",
-      version="0.1.2",
+      version="0.1.3",
       description="A quantum computing library for the rest of us",
       author="Dobromir Yordanov",
       author_email="dobri.domain@gmail.com",
