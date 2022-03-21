@@ -23,3 +23,7 @@ def cpp_method(*args, **kwargs):
 # .def("GetGlobalAmplitude", &QubitRegister<ComplexDP>::GetGlobalAmplitude)
 if 'GetGlobalAmplitude' not in dir(_iqs.QubitRegister):
   _iqs.QubitRegister.GetGlobalAmplitude = cpp_method
+
+# .def("IsClassicalBit", &QubitRegister<ComplexDP>::IsClassicalBit)
+if 'IsClassicalBit' not in dir(_iqs.QubitRegister):
+  _iqs.QubitRegister.IsClassicalBit = cpp_method

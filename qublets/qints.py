@@ -116,6 +116,7 @@ class QUInt:
     return self
 
   def c_negate(self: QIntType,
+               *,
                on: Qubit,
                qubit: Optional[int] = None) -> QIntType:
     if self.qpu != on.quint.qpu:
@@ -124,10 +125,10 @@ class QUInt:
     if qubit is not None:
       self.qpu.ApplyCPauliX(on.quint.start_qubit + on.qubit,
                             self.start_qubit + qubit)
-      return
+      return self
 
     for i in range(self.num_qubits):
-      self.c_negate(on, i)
+      self.c_negate(on=on, qubit=i)
 
     return self
 
@@ -152,6 +153,7 @@ class QUInt:
     return self
 
   def phase(self: QIntType,
+            *,
             qubit: Optional[int] = None,
             angle: float = -pi / 2) -> QIntType:
     if qubit is not None:
@@ -159,7 +161,25 @@ class QUInt:
       return self
 
     for i in range(self.num_qubits):
-      self.phase(i, angle)
+      self.phase(qubit=i, angle=angle)
+
+    return self
+
+  def c_phase(self: QIntType,
+              *,
+              on: Qubit,
+              qubit: Optional[int] = None,
+              angle: float = -pi / 2) -> QIntType:
+    if self.qpu != on.quint.qpu:
+      raise Exception("Cannot cross-compute between QPUs!")
+
+    if qubit is not None:
+      self.qpu.ApplyCRotationZ(on.quint.start_qubit + on.qubit,
+                               self.start_qubit + qubit, angle)
+      return self
+
+    for i in range(self.num_qubits):
+      self.c_phase(on=on, qubit=i, angle=angle)
 
     return self
 
@@ -176,7 +196,7 @@ class QUInt:
 
       self.qpu.ApplySwap(self.start_qubit + qubit,
                          other.start_qubit + other_qubit)
-      return
+      return self
 
     if self.num_qubits != other.num_qubits:
       raise Exception("Cannot swap Q(U)Int of different sizes!")
@@ -184,8 +204,11 @@ class QUInt:
     for i in range(self.num_qubits):
       self.swap(other, i)
 
+    return self
+
   def c_swap(self: QIntType,
              other: QIntType,
+             *,
              on: Qubit,
              qubit: Optional[int] = None,
              other_qubit: Optional[int] = None) -> QIntType:
@@ -205,16 +228,19 @@ class QUInt:
       self.qpu.ApplyToffoli(on.quint.start_qubit + on.qubit,
                             self.start_qubit + qubit,
                             other.start_qubit + other_qubit)
-      return
+      return self
 
     if self.num_qubits != other.num_qubits:
       raise Exception("Cannot swap Q(U)Int of different sizes!")
 
     for i in range(self.num_qubits):
-      self.c_swap(other, on, i)
+      self.c_swap(other, on=on, qubit=i)
+
+    return self
 
   def swap_test(self: QIntType,
                 other: QIntType,
+                *,
                 on: Qubit,
                 qubit: Optional[int] = None,
                 other_qubit: Optional[int] = None) -> QIntType:
@@ -223,7 +249,7 @@ class QUInt:
 
     # Trample the ancilla for a swaptest
     on.quint[on.qubit] = 0
-    self.c_swap(other, on.hadamard(), qubit, other_qubit)
+    self.c_swap(other, on=on.hadamard(), qubit=qubit, other_qubit=other_qubit)
     return on.hadamard().negate().measure()
 
   def set(self, value: int) -> QIntType:
@@ -273,3 +299,14 @@ class QInt(QUInt):
       return val
     val ^= 2**(self.num_qubits) - 1
     return -(val + 1)
+
+  def set(self, value: int) -> QIntType:
+    if value < -(1 << self.num_qubits - 1) or value >= (
+        1 << self.num_qubits - 1):
+      raise Exception(f"Value to set for QInt out of bounds: {value}")
+
+    if value < 0:
+      value ^= 2**(self.num_qubits) - 1
+      value = -(value + 1)
+
+    return super().set(value)

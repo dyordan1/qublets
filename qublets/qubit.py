@@ -36,7 +36,7 @@ class Qubit:
 
     """
 
-    self.quint.c_negate(on.quint, self.qubit, on.qubit)
+    self.quint.c_negate(on=on, qubit=self.qubit)
     return self
 
   def sqrt_not(self) -> QubitType:
@@ -70,6 +70,17 @@ class Qubit:
     """
 
     self.quint.phase(self.qubit, angle)
+    return self
+
+  def c_phase(self, *, on: QubitType, angle: float = pi / 2) -> QubitType:
+    """ Applies a hadamard gate. Puts the qubit in an exact superposition
+
+    Returns:
+      The Qubit
+
+    """
+
+    self.quint.c_phase(on=on, qubit=self.qubit, angle=angle)
     return self
 
   def swap(self, other: QubitType) -> QubitType:
