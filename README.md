@@ -6,7 +6,7 @@ Qublets is an approachable Quantum Computing Library written in Python using Int
 Setup
 ---
 
-If you are on Unix, the easiest way to start using qublets is by installing the pre-compiled [pip module](https://pypi.org/project/qublets/):
+If you are on Unix (or using WSL on Windows), the easiest way to start using qublets is by installing the pre-compiled [pip module](https://pypi.org/project/qublets/):
 ```bash
 pip install qublets
 ```
@@ -19,7 +19,7 @@ curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
 python3 get-pip.py
 ```
 
-If you are **not** on Unix or don't want to install pip, you can always [build from source](./build_from_source.md)
+If you are **not** on Unix or don't want to install pip or WSL, you can always [build from source](./build_from_source.md). Note that it is highly recommended to [install WSL](https://docs.microsoft.com/en-us/windows/wsl/install) on Windows and use the Unix pre-compiled `pip` binaries above. Windows is currently an unsupported platform for `intel-qs` and Mac requires a custom g++ compiler, due to the clang compiler not containing some dependencies for `intel-qs`. ***In other words, there be dragons if you choose to not go the `pip` route.***
 
 Getting Started
 ---
