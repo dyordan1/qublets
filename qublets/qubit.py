@@ -3,7 +3,8 @@
 from typing import TypeVar
 
 QIntType = TypeVar("QIntType", bound="QUInt")
-QubitType = TypeVar("Qubit", bound="Qubit")
+QubitType = TypeVar("QubitType", bound="Qubit")
+
 
 class Qubit:
   """ A single qubit in a Q(U)Int """

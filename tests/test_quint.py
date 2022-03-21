@@ -15,8 +15,8 @@ class QUIntTest(unittest.TestCase):
 
   def test_shared_qpu(self):
     qpu = QPU(4)
-    q1 = QUInt.zeros(2, qpu)
-    q2 = QUInt.zeros(2, qpu)
+    q1 = QUInt.zeros(2, qpu=qpu)
+    q2 = QUInt.zeros(2, qpu=qpu)
 
     self.assertEqual(q1.qpu, qpu, "quint qpu mismatch")
     self.assertEqual(q2.qpu, qpu, "quint qpu mismatch")

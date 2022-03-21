@@ -1,6 +1,6 @@
 """ QUInt and QInt class definition """
 
-from typing import Optional, Type, TypeVar
+from typing import Literal, Optional, Type, TypeVar
 
 from .qpu import QPU
 from .qubit import Qubit
@@ -25,52 +25,84 @@ class QUInt:
   def __getitem__(self, qubit: int) -> Qubit:
     return Qubit(self, qubit)
 
+  def __setitem__(self, qubit: int, value: Literal[1, 0]) -> None:
+    # TODO(dyordan1): Is this really the most reliable way to "force" a qubit?
+    if value != 1 and value != 0:
+      raise Exception("Can only set qubits to 0 or 1")
+
+    # sanity check if we can set this bit
+    probability = self.qpu.GetProbability(self.start_qubit + qubit)
+    if (probability == 0 and value == 1) or (probability == 1 and value == 0):
+      if not self.qpu.IsClassicalBit(self.start_qubit + qubit, 1.e-13):
+        raise Exception("Cannot set entangled qubit")
+
+      # Invert gate if incompatible *and* classical
+      self.qpu.ApplyPauliX(self.start_qubit + qubit)
+
+    self.qpu.CollapseQubit(self.start_qubit + qubit, bool(value))
+    self.qpu.Normalize()
+
   @classmethod
   def zeros(cls: Type[QIntType],
             size: int,
+            *,
             qpu: Optional[QPU] = None) -> QIntType:
-    return cls(size, qpu)
+    return cls(size, qpu=qpu)
 
   @classmethod
   def ones(cls: Type[QIntType],
            size: int,
+           *,
            qpu: Optional[QPU] = None) -> QIntType:
-    return cls.zeros(size, qpu).negate()
+    return cls.zeros(size, qpu=qpu).negate()
 
   @classmethod
   def pluses(cls: Type[QIntType],
              size: int,
+             *,
              qpu: Optional[QPU] = None) -> QIntType:
-    return cls.zeros(size, qpu).hadamard()
+    return cls.zeros(size, qpu=qpu).hadamard()
 
   @classmethod
   def minuses(cls: Type[QIntType],
               size: int,
+              *,
               qpu: Optional[QPU] = None) -> QIntType:
-    return cls.ones(size, qpu).hadamard()
+    return cls.ones(size, qpu=qpu).hadamard()
 
   @classmethod
   def lefts(cls: Type[QIntType],
             size: int,
+            *,
             qpu: Optional[QPU] = None) -> QIntType:
-    return cls.zeros(size, qpu).sqrt_not().hadamard()
+    return cls.zeros(size, qpu=qpu).sqrt_not().hadamard()
 
   @classmethod
   def rights(cls: Type[QIntType],
              size: int,
+             *,
              qpu: Optional[QPU] = None) -> QIntType:
-    return cls.ones(size, qpu).sqrt_not().hadamard()
+    return cls.ones(size, qpu=qpu).sqrt_not().hadamard()
 
   @classmethod
   def fully_entangled(cls: Type[QIntType],
                       size: int,
+                      *,
                       qpu: Optional[QPU] = None) -> QIntType:
-    q = cls.zeros(size, qpu).hadamard(0)
+    q = cls.zeros(size, qpu=qpu).hadamard(0)
 
     for i in range(q.num_qubits - 1):
       q.qpu.ApplyCPauliX(q.start_qubit + i, q.start_qubit + i + 1)
 
     return q
+
+  @classmethod
+  def value(cls: Type[QIntType],
+            size: int,
+            value: int,
+            *,
+            qpu: Optional[QPU] = None) -> QIntType:
+    return cls.zeros(size, qpu=qpu).set(value)
 
   def negate(self: QIntType, qubit: Optional[int] = None) -> QIntType:
     if qubit is not None:
@@ -83,24 +115,20 @@ class QUInt:
     return self
 
   def c_negate(self: QIntType,
-               on: QIntType,
-               qubit: Optional[int] = None,
-               on_qubit: Optional[int] = None) -> QIntType:
-    if self.qpu != on.qpu:
+               on: Qubit,
+               qubit: Optional[int] = None) -> QIntType:
+    if self.qpu != on.quint.qpu:
       raise Exception("Cannot cross-compute between QPUs!")
 
     if qubit is not None:
-      if on_qubit is None:
-        on_qubit = qubit
-
-      self.qpu.ApplyCPauliX(on.start_qubit + on_qubit, self.start_qubit + qubit)
+      self.qpu.ApplyCPauliX(on.quint.start_qubit + on.qubit,
+                            self.start_qubit + qubit)
       return
-
-    if self.num_qubits != on.num_qubits:
-      raise Exception("Cannot entangle Q(U)Int of different sizes!")
 
     for i in range(self.num_qubits):
       self.c_negate(on, i)
+
+    return self
 
   def sqrt_not(self: QIntType, qubit: Optional[int] = None) -> QIntType:
     if qubit is not None:
@@ -181,10 +209,19 @@ class QUInt:
       raise Exception("Cannot cross-compute between QPUs!")
 
     # Trample the ancilla for a swaptest
-    self.qpu.CollapseQubit(on.quint.start_qubit + on.qubit, False)
-    self.qpu.Normalize()
+    on.quint[on.qubit] = 0
     self.c_swap(other, on.hadamard(), qubit, other_qubit)
     return on.hadamard().negate().measure()
+
+  def set(self, value: int) -> QIntType:
+    if value < 0 or value > 2**self.num_qubits:
+      raise Exception(f"Value to set for QUInt out of bounds: {value}")
+    mask = 1
+    for i in range(self.num_qubits):
+      self[i] = 1 if value & mask else 0
+      mask <<= 1
+
+    return self
 
   def measure(self: QIntType, qubit: Optional[int] = None) -> int:
     if qubit is not None:

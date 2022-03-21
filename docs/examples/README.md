@@ -39,8 +39,8 @@ Swapping 4-bit integers on a shared QPU
 ```python
 def work():
   qpu = QPU(8)
-  first = QUInt.fully_entangled(4, qpu)
-  second = QUInt.pluses(4, qpu)
+  first = QUInt.fully_entangled(4, qpu=qpu)
+  second = QUInt.pluses(4, qpu=qpu)
   first.swap(second)
   return first.measure()
 
@@ -53,11 +53,11 @@ Conditionally swapping 4-bit integers (superposition ancilla)
 ```python
 def work():
   qpu = QPU(9)
-  first = QUInt.fully_entangled(4, qpu)
-  second = QUInt.pluses(4, qpu)
+  first = QUInt.fully_entangled(4, qpu=qpu)
+  second = QUInt.pluses(4, qpu=qpu)
 
   # Ancilla is in a superposition, so we'd expect about half to be swapped...
-  ancilla = QUInt.pluses(1, qpu)[0]
+  ancilla = QUInt.pluses(1, qpu=qpu)[0]
   first.c_swap(second, on=ancilla)
   return first.measure()
 
@@ -72,11 +72,11 @@ def work():
   qpu = QPU(9)
   # We'd expect a 50/50 result on swap test since the quints are not equal.
   # You should get only 1s for the ancilla readout if you set them to be.
-  first = QUInt.zeros(4, qpu)
-  second = QUInt.ones(4, qpu)
+  first = QUInt.zeros(4, qpu=qpu)
+  second = QUInt.ones(4, qpu=qpu)
 
   # Ancilla state doesn't matter, it gets trampled
-  ancilla = QUInt.pluses(1, qpu)[0]
+  ancilla = QUInt.pluses(1, qpu=qpu)[0]
   return first.swap_test(second, on=ancilla)
 
 # Example Output: [(0, 547), (1, 453)]

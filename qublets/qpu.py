@@ -49,7 +49,7 @@ class QPUStateCollection:
       if abs(state.phase) > 0.000001:
         phase = state.phase
         for known_val, known_label in known_phases.items():
-          if abs(state.phase - known_val) < 0.000001:
+          if abs(abs(state.phase) - known_val) < 0.000001:
             phase = known_label
             # TODO(dyordan1): Do we need phase < 0? Some sources use [-pi; pi]
             # instead of [0; 2pi]
